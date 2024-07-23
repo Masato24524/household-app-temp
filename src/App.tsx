@@ -127,6 +127,15 @@ function App() {
               />
             }/>
 
+            <Route path='/household-app-temp' element={
+              <Home 
+              monthlyTransactions={monthlyTransactions} 
+              setCurrentMonth={setCurrentMonth}
+              onSaveTransaction={handleSaveTransaction}
+              onDeleteTransaction={handleDeleteTransaction}
+            />
+            }/>
+
           </Route>
         </Routes>
       </Router>
