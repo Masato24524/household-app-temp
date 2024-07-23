@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/household-app-temp/static/css/main.abbea604.css",
+    "main.js": "/household-app-temp/static/js/main.be76413b.js",
+    "index.html": "/household-app-temp/index.html",
+    "main.abbea604.css.map": "/household-app-temp/static/css/main.abbea604.css.map",
+    "main.be76413b.js.map": "/household-app-temp/static/js/main.be76413b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.abbea604.css",
+    "static/js/main.be76413b.js"
+  ]
+}
