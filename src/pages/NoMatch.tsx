@@ -5,7 +5,7 @@ const NoMatch = () => {
   return (
     <div>
       このページはありません
-    <RedirectToRoot />
+    {/* <RedirectToRoot /> */}
 
     </div>
   )
