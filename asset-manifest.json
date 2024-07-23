@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/household-app-temp/static/css/main.abbea604.css",
-    "main.js": "/household-app-temp/static/js/main.be76413b.js",
+    "main.js": "/household-app-temp/static/js/main.bd7ca9dc.js",
     "index.html": "/household-app-temp/index.html",
     "main.abbea604.css.map": "/household-app-temp/static/css/main.abbea604.css.map",
-    "main.be76413b.js.map": "/household-app-temp/static/js/main.be76413b.js.map"
+    "main.bd7ca9dc.js.map": "/household-app-temp/static/js/main.bd7ca9dc.js.map"
   },
   "entrypoints": [
     "static/css/main.abbea604.css",
-    "static/js/main.be76413b.js"
+    "static/js/main.bd7ca9dc.js"
   ]
 }
