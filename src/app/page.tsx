@@ -1,18 +1,22 @@
+"use client"
+
 import React, { useEffect, useState } from 'react';
-import './App.css';
+import './page.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Report from './pages/Report';
-import NoMatch from './pages/NoMatch';
+import Home from './Home/Home';
+import Report from './Report/Report';
+import NoMatch from './NoMatch/NoMatch';
 import AppLayout from './components/layout/AppLayout';
 import { theme } from './theme/theme'
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
 import { Transaction } from './types/index';
 import { addDoc, collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from '../firebase';
 import { formatMonth } from './utils/formatting';
 import { Schema } from './validations/schema';
+import Signup from './Signup/Signup';
+// import AuthComponent from './components/AuthComponent';
 
 function App() {
 
@@ -107,6 +111,11 @@ function App() {
       <CssBaseline />
       <Router>
         <Routes>
+          <Route path='/household-app-temp' element={
+              // <AuthComponent />
+              <Signup />
+            }/>
+
           <Route path='/' element={<AppLayout />}>
             <Route index element={
               <Home 
@@ -127,14 +136,14 @@ function App() {
               />
             }/>
 
-            <Route path='/household-app-temp' element={
+            {/* <Route path='/household-app-temp' element={
               <Home 
               monthlyTransactions={monthlyTransactions} 
               setCurrentMonth={setCurrentMonth}
               onSaveTransaction={handleSaveTransaction}
               onDeleteTransaction={handleDeleteTransaction}
             />
-            }/>
+            }/> */}
 
           </Route>
         </Routes>

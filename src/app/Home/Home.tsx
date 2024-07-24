@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import React, { useState } from 'react'
 import MonthlySummary from '../components/MonthlySummary'
-import Calender from '../components/Calendar'
+import Calender from '../components/Calendar/Calendar'
 import TransactionMenu from '../components/TransactionMenu'
 import TransactionForm from '../components/TransactionForm'
 import { Transaction } from '../types'
