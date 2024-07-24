@@ -2,7 +2,7 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
@@ -39,7 +39,16 @@ if (!firebaseConfig.apiKey) {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const analytics = getAnalytics(app);
+
+// Initialize Analytics only if supported
+let analytics;
+if (typeof window !== 'undefined') {
+  isSupported().then(supported => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
 
 // 認証オブジェクトの準備
 const auth = getAuth(app);
@@ -47,4 +56,4 @@ const auth = getAuth(app);
 // Google認証プロバイダの準備
 const googleProvider = new GoogleAuthProvider();
 
-export { db, auth, googleProvider };
+export { db, auth, googleProvider, analytics };
