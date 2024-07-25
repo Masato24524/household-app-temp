@@ -2,7 +2,7 @@ function Signup() {
     return (
       <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">SNS APP</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900">家計簿アプリ</h2>
           <div className="mt-8 w-full max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
               <div className="space-y-6">
