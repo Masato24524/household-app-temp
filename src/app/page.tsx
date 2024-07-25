@@ -16,7 +16,14 @@ import { db } from '../firebase';
 import { formatMonth } from './utils/formatting';
 import { Schema } from './validations/schema';
 import Signup from './Signup/Signup';
+import dynamic from 'next/dynamic';
+// import ClientOnlyRouter from './ClientOnlyRouter';
 // import AuthComponent from './components/AuthComponent';
+
+// クライアントサイド専用で動的にインポート
+const ClientOnlyRouter = dynamic(() => import('./ClientOnlyRouter'), {
+  ssr: false,
+});
 
 function App() {
 
@@ -109,7 +116,13 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <ClientOnlyRouter 
+        monthlyTransactions={monthlyTransactions} 
+        setCurrentMonth={setCurrentMonth}
+        onSaveTransaction={handleSaveTransaction}
+        onDeleteTransaction={handleDeleteTransaction}
+      />
+      {/* <Router>
         <Routes>
           <Route path='/household-app-temp' element={
               // <AuthComponent />
@@ -136,18 +149,9 @@ function App() {
               />
             }/>
 
-            {/* <Route path='/household-app-temp' element={
-              <Home 
-              monthlyTransactions={monthlyTransactions} 
-              setCurrentMonth={setCurrentMonth}
-              onSaveTransaction={handleSaveTransaction}
-              onDeleteTransaction={handleDeleteTransaction}
-            />
-            }/> */}
-
           </Route>
         </Routes>
-      </Router>
+      </Router> */}
     </ThemeProvider>
   );
 }
