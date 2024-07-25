@@ -7,6 +7,7 @@ import AppLayout from './components/layout/AppLayout';
 import Signup from './Signup/Signup';
 import { Transaction } from './types';
 import { Schema } from './validations/schema';
+import Signin from './Signin/Signin';
 
 interface ClientOnlyRouterProps {
     monthlyTransactions: Transaction[];
@@ -27,18 +28,20 @@ const ClientOnlyRouter: React.FC<ClientOnlyRouterProps> = ({
     return(
         <Router basename={basename}>
             <Routes>
-            <Route path='/' element={<AppLayout />}>
-                <Route index element={<Home
-                                monthlyTransactions={monthlyTransactions} 
-                                setCurrentMonth={setCurrentMonth}
-                                onSaveTransaction={handleSaveTransaction}
-                                onDeleteTransaction={handleDeleteTransaction} />} 
-                />
-                <Route path='/report' element={<Report />} />
-                <Route path='/signup' element={<Signup />} />
+                <Route index element={<Signup />} />
 
-                <Route path='*' element={<NoMatch />} />
-            </Route>
+                <Route path='/applayout' element={<AppLayout />}>
+                    <Route path='/applayout/home' element={<Home
+                                    monthlyTransactions={monthlyTransactions} 
+                                    setCurrentMonth={setCurrentMonth}
+                                    onSaveTransaction={handleSaveTransaction}
+                                    onDeleteTransaction={handleDeleteTransaction} />} 
+                    />
+                    <Route path='/applayout/report' element={<Report />} />
+                    {/* <Route path='/signin' element={<Signin />} /> */}
+
+                    <Route path='*' element={<NoMatch />} />
+                </Route>
             </Routes>
         </Router>
     );

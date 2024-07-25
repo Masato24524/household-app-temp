@@ -22,9 +22,10 @@ interface menuItem {
 const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDrawerClose}:SidebarProps) => {
 
   const MenuItems: menuItem[] = [
-    {text: "Home", path: "/", icon: HomeIcon},
-    {text: "月間レポート", path: "/report", icon: EqualizerIcon},
-    {text: "ログイン画面", path: "/signup", icon: EqualizerIcon}
+    {text: "Home", path: "/applayout/home", icon: HomeIcon},
+    {text: "月間レポート", path: "/applayout/report", icon: EqualizerIcon},
+    // {text: "登録画面", path: "/signup", icon: EqualizerIcon},
+    // {text: "ログイン画面", path: "/signin", icon: EqualizerIcon},
   ]
 
   const baseLinkStyle: CSSProperties = {
