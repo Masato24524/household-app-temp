@@ -41,7 +41,6 @@
     "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -62,7 +61,10 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "gh-pages": "^6.1.1"
+    "autoprefixer": "^10.4.19",
+    "gh-pages": "^6.1.1",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.6"
   },
   "homepage": "https://masato24524.github.io/household-app-temp/"
 }
