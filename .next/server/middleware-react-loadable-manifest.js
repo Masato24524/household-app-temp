@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST="{\"app\\\\page.tsx -> ./ClientOnlyRouter\":{\"id\":\"app\\\\page.tsx -> ./ClientOnlyRouter\",\"files\":[\"static/css/_app-pages-browser_src_app_ClientOnlyRouter_tsx.css\",\"static/chunks/_app-pages-browser_src_app_ClientOnlyRouter_tsx.js\"]}}"
