@@ -20,22 +20,28 @@ const ClientOnlyRouter: React.FC<ClientOnlyRouterProps> = ({
     setCurrentMonth,
     onSaveTransaction: handleSaveTransaction,
     onDeleteTransaction: handleDeleteTransaction
-}) => (
-  <Router>
-    <Routes>
-      <Route path='/household-app-temp' element={<Signup />} />
-      <Route path='/' element={<AppLayout />}>
-        <Route index element={<Home
-                        monthlyTransactions={monthlyTransactions} 
-                        setCurrentMonth={setCurrentMonth}
-                        onSaveTransaction={handleSaveTransaction}
-                        onDeleteTransaction={handleDeleteTransaction} />} 
-        />
-        <Route path='/report' element={<Report />} />
-        <Route path='*' element={<NoMatch />} />
-      </Route>
-    </Routes>
-  </Router>
-);
+}) => {
+    const isGitHubPages = process.env.NODE_ENV === 'production'; // ここでチェック
+    const basename = isGitHubPages ? '/household-app-temp' : '/';
+    
+    return(
+        <Router basename={basename}>
+            <Routes>
+            <Route path='/' element={<AppLayout />}>
+                <Route index element={<Home
+                                monthlyTransactions={monthlyTransactions} 
+                                setCurrentMonth={setCurrentMonth}
+                                onSaveTransaction={handleSaveTransaction}
+                                onDeleteTransaction={handleDeleteTransaction} />} 
+                />
+                <Route path='/report' element={<Report />} />
+                <Route path='/signup' element={<Signup />} />
+
+                <Route path='*' element={<NoMatch />} />
+            </Route>
+            </Routes>
+        </Router>
+    );
+}
 
 export default ClientOnlyRouter;

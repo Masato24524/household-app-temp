@@ -23,7 +23,8 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDraw
 
   const MenuItems: menuItem[] = [
     {text: "Home", path: "/", icon: HomeIcon},
-    {text: "月間レポート", path: "/report", icon: EqualizerIcon}
+    {text: "月間レポート", path: "/report", icon: EqualizerIcon},
+    {text: "ログイン画面", path: "/signup", icon: EqualizerIcon}
   ]
 
   const baseLinkStyle: CSSProperties = {
