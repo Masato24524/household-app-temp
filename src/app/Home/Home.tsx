@@ -58,7 +58,7 @@ const Home = ({
   return (
     <Box sx={{display: 'flex'}}>
       {/* 左側コンテンツ */}
-      <Box sx={{flexGrow: 1}}>
+      <Box sx={{flexGrow: 3}}>
         <MonthlySummary monthlyTransactions={monthlyTransactions} />
         <Calender 
         monthlyTransactions={monthlyTransactions} 

@@ -32,7 +32,7 @@ const TransactionMenu = ({
   onAddTransactionForm,
   onSelectTransaction,
 }: TransactionProps) => {
-  const menuDrawerWidth = 320;
+  const menuDrawerWidth = {xs: 160, sm: 320};
   return (
     <Drawer
       sx={{
