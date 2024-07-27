@@ -1,9 +1,10 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { error } from "console";
 import './Signup.css'
+import { doc, setDoc } from "firebase/firestore";
 
 
 function Signup() {
@@ -19,7 +20,14 @@ function Signup() {
     await createUserWithEmailAndPassword(auth, email, password)
     .then((useCredential) => {
       console.log(useCredential);
-      navigate('/');
+
+      // ユーザー専用のコレクションを作成
+      setDoc(doc(db, 'users', useCredential.user.uid), {
+        email: useCredential.user.email,
+        createdAt: new Date(),
+      });
+
+      navigate('/applayout');
     })
     .catch((error) => {
       alert(error.message);

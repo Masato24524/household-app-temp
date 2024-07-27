@@ -49,8 +49,8 @@ const TransactionForm = ({
   onSaveTransaction,
   selectedTransaction,
   onDeleteTransaction,
-}: TransactionFromProps) => {
-  const formWidth = 320;
+}: TransactionFromProps) => 
+{ const formWidth = {xs: 160, sm: 320};
 
   const expenseCategories: CategoryItem[] = [
     { label: "食費", icon: <FastfoodIcon fontSize="small" /> },
