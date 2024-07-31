@@ -7,9 +7,13 @@ import {
     Title,
     Tooltip,
     Legend,
-    ChartOptions
+    ChartOptions,
+    ChartData
   } from "chart.js";
   import { Bar } from "react-chartjs-2";
+import { calculateDailyBalances } from '../utils/financeCalculations';
+import { Transaction } from '../types';
+import { useTheme } from '@mui/material';
   
   ChartJS.register(
     CategoryScale,
@@ -20,38 +24,53 @@ import {
     Legend
   );
 
-const BarChart = () => {
-    const options: ChartOptions<"bar">
-      = {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "top"
-          },
-          title: {
-            display: true,
-            text: "Chart.js Bar Chart"
-          }
+interface BarChartProps {
+  monthlyTransactions: Transaction[]
+}
+const BarChart = ({ monthlyTransactions }: BarChartProps) => {
+  const theme = useTheme();
+
+  const options: ChartOptions<"bar">
+    = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top"
+        },
+        title: {
+          display: true,
+          text: "Chart.js Bar Chart"
         }
-      };
-
-    const labels = ["2024-07-18", "February", "March", "April", "May", "June", "July"];
-
-    const data = {
-        labels,
-        datasets: [
-            {
-            label: "支出",
-            data: [100, 200, 300, 400, 500, 600, 700],
-            backgroundColor: "rgba(255, 99, 132, 0.5)"
-            },
-            {
-            label: "収入",
-            data: [100, 200, 300, 400, 500, 600, 700],
-            backgroundColor: "rgba(53, 162, 235, 0.5)"
-            }
-        ]
+      }
     };
+
+  const dailyBalances = calculateDailyBalances(monthlyTransactions);
+  console.log(dailyBalances);
+  console.log(monthlyTransactions);
+
+  const dateLabels = Object.keys(dailyBalances).sort();
+  console.log(dateLabels);
+  const expenseData = dateLabels.map((day) => dailyBalances[day].expense);
+  const incomeData = dateLabels.map((day) => dailyBalances[day].income);
+
+  const labels = ["2024-07-18", "February", "March", "April", "May", "June", "July"];
+
+  const data: ChartData<"bar"> = {
+      labels: dateLabels,
+      datasets: [
+          {
+          label: "支出",
+          data: expenseData,
+          backgroundColor: theme.palette.expenseColor.light,
+          },
+          {
+          label: "収入",
+          data: incomeData,
+          backgroundColor: theme.palette.incomeColor.light,
+          }
+      ]
+  };
+
   return (
     <Bar options={options} data={data} />
   )

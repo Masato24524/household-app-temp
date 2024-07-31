@@ -1,10 +1,14 @@
+'use client'
+
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth, db } from "../../firebase";
-import { Link, useNavigate } from "react-router-dom";
+// import { Link, useNavigate } from "react-router-dom";
 import { error } from "console";
-import './Signup.css'
+import './page.css'
 import { doc, setDoc } from "firebase/firestore";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 function Signup() {
@@ -14,7 +18,7 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const signup = async () => {
     await createUserWithEmailAndPassword(auth, email, password)
@@ -27,7 +31,7 @@ function Signup() {
         createdAt: new Date(),
       });
 
-      navigate('/applayout');
+      router.push('/home');
     })
     .catch((error) => {
       alert(error.message);
@@ -39,7 +43,7 @@ function Signup() {
     await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log(userCredential);
-        navigate("/applayout/home");
+        router.push("/home");
       })
       .catch((error) => {
         alert(error.message);
@@ -94,6 +98,12 @@ function Signup() {
               </div>
               <div>
                 <label
+                  className="block text-sm font-medium text-white"
+                  htmlFor="password"
+                >
+                  abcdefg
+                </label>
+                <label
                   className="block text-sm font-medium text-gray-700"
                   htmlFor="password"
                 >
@@ -122,7 +132,7 @@ function Signup() {
               </div>
               <div className="mt-4 text-center text-sm">
                 <Link 
-                  to={""}
+                  href={""}
                   className="underline"  
                   onClick={() => setIsLogin(!isLogin)}
                 >

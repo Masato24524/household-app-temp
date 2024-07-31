@@ -1,3 +1,5 @@
+'use client'
+
 import { PaletteColor, PaletteColorOptions, createTheme } from "@mui/material";
 import { blue, green, red } from "@mui/material/colors";
 

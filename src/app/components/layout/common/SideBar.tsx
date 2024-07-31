@@ -1,10 +1,14 @@
+'use client'
+
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material'
 // import InboxIcon from '@mui/icons-material/MoveToInbox';
 // import MailIcon from '@mui/icons-material/Mail';
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, use, useEffect, useState } from 'react'
 import HomeIcon from '@mui/icons-material/Home';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+// import { NavLink } from 'react-router-dom';
 
 interface SidebarProps {
     drawerWidth: number,
@@ -19,11 +23,12 @@ interface menuItem {
   icon: React.ComponentType,
 }
 
-const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDrawerClose}:SidebarProps) => {
+const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDrawerClose}: SidebarProps) => {
+  const pathname = usePathname();
 
   const MenuItems: menuItem[] = [
-    {text: "Home", path: "/applayout/home", icon: HomeIcon},
-    {text: "月間レポート", path: "/applayout/report", icon: EqualizerIcon},
+    {text: "Home", path: "/home", icon: HomeIcon},
+    {text: "月間レポート", path: "/report", icon: EqualizerIcon},
     // {text: "登録画面", path: "/signup", icon: EqualizerIcon},
     // {text: "ログイン画面", path: "/signin", icon: EqualizerIcon},
   ]
@@ -31,11 +36,12 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDraw
   const baseLinkStyle: CSSProperties = {
     textDecoration: "none",
     color: "inherit",
-    display: "block"
+    display: "block",
+    width: "100%",
   }
 
   const activeLinkStyle: CSSProperties = {
-    backgroundColor: "rgba(0, 0, 0, 0.08"
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
   }
 
   const drawer = (
@@ -43,24 +49,22 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDraw
       <Toolbar />
       <Divider />
       <List>
-        {MenuItems.map((item, index) => (
-          <NavLink key={item.text} to={item.path} style={({isActive}) => {
-            // console.log("選択されたメニューは", item.text, isActive)
-            return {
-              ...baseLinkStyle,
-              ...(isActive ? activeLinkStyle : {})
-            }
-          }}>
-            <ListItem key={index} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                  <item.icon />
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          </NavLink>
+        {MenuItems.map((item) => (
+          <Link key={item.text} href={item.path} passHref style={baseLinkStyle}>
+            {/* console.log("選択されたメニューは", item.text, isActive) */}
+              {/* <ListItem key={index} disablePadding> */}
+                <ListItemButton
+                  sx={{
+                    ...(pathname === item.path ? activeLinkStyle : {}),
+                  }}>
+                  <ListItemIcon>
+                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                    <item.icon />
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              {/* </ListItem> */}
+          </Link>
         ))}
       </List>
     </div>
