@@ -18,13 +18,14 @@ interface CalendarProps {
   currentDay: string;
   today: string;
 }
-const Calender = ({
+const Calendar = ({
   monthlyTransactions, 
   setCurrentMonth,
   setCurrentDay,
   currentDay,
   today,
 }: CalendarProps) => {
+  console.log('Received props:', { monthlyTransactions, setCurrentMonth, setCurrentDay, currentDay, today });
   const theme = useTheme();
 
   // 1.日付ごとの収支を計算する関数💰
@@ -115,4 +116,4 @@ const Calender = ({
   )
 }
 
-export default Calender
+export default Calendar
