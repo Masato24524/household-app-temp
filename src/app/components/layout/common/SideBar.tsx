@@ -1,11 +1,12 @@
 'use client'
 
-import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material'
+import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from '@mui/material'
 // import InboxIcon from '@mui/icons-material/MoveToInbox';
 // import MailIcon from '@mui/icons-material/Mail';
 import React, { CSSProperties, use, useEffect, useState } from 'react'
 import HomeIcon from '@mui/icons-material/Home';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 // import { NavLink } from 'react-router-dom';
@@ -18,7 +19,7 @@ interface SidebarProps {
 }
 
 interface menuItem {
-  text: string,
+  text: string | React.ReactNode,
   path: string,
   icon: React.ComponentType,
 }
@@ -28,7 +29,7 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDraw
 
   const MenuItems: menuItem[] = [
     {text: "Home", path: "/home", icon: HomeIcon},
-    {text: "月間レポート", path: "/report", icon: EqualizerIcon},
+    {text: <Typography>月間<br />ﾚﾎﾟｰﾄ</Typography>, path: "/report", icon: QueryStatsIcon},
     // {text: "登録画面", path: "/signup", icon: EqualizerIcon},
     // {text: "ログイン画面", path: "/signin", icon: EqualizerIcon},
   ]
@@ -49,15 +50,15 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDraw
       <Toolbar />
       <Divider />
       <List>
-        {MenuItems.map((item) => (
-          <Link key={item.text} href={item.path} passHref style={baseLinkStyle}>
+        {MenuItems.map((item, index) => (
+          <Link key={index} href={item.path} passHref style={baseLinkStyle}>
             {/* console.log("選択されたメニューは", item.text, isActive) */}
               {/* <ListItem key={index} disablePadding> */}
                 <ListItemButton
                   sx={{
                     ...(pathname === item.path ? activeLinkStyle : {}),
                   }}>
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ minWidth: 30 }}>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                     <item.icon />
                   </ListItemIcon>
@@ -106,7 +107,6 @@ const Sidebar = ({drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDraw
           {drawer}
         </Drawer>
       </Box>
-
     </div>
   )
 }

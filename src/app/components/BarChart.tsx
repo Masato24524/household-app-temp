@@ -13,33 +13,30 @@ import {
   import { Bar } from "react-chartjs-2";
 import { calculateDailyBalances } from '../utils/financeCalculations';
 import { Transaction } from '../types';
-import { useTheme } from '@mui/material';
+import { Box, CircularProgress, Typography, useTheme } from '@mui/material';
   
-  ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-  );
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface BarChartProps {
   monthlyTransactions: Transaction[]
+  isLoading: boolean;
 }
-const BarChart = ({ monthlyTransactions }: BarChartProps) => {
+const BarChart = ({ monthlyTransactions, isLoading }: BarChartProps) => {
   const theme = useTheme();
-
-  const options: ChartOptions<"bar">
-    = {
+  const options: ChartOptions<"bar"> = {
+      maintainAspectRatio: false,
       responsive: true,
       plugins: {
-        legend: {
-          position: "top"
-        },
         title: {
           display: true,
-          text: "Chart.js Bar Chart"
+          text: "日別収支",
         }
       }
     };
@@ -72,7 +69,23 @@ const BarChart = ({ monthlyTransactions }: BarChartProps) => {
   };
 
   return (
-    <Bar options={options} data={data} />
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexGrow: 1,
+        width: "100%",
+      }}
+    >
+      {isLoading ? (
+        <CircularProgress />
+      ) : monthlyTransactions.length > 0 ? (
+          <Bar options={options} data={data} />
+      ) : (
+        <Typography>データがありません</Typography>
+      )}
+    </Box>
   )
 }
 

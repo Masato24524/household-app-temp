@@ -6,6 +6,8 @@ interface TransactionContextType {
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
   handleSaveTransaction: (transaction: Schema) => Promise<void>;
   handleDeleteTransaction: (transactionId: string) => Promise<void>;
+  isLoading: boolean;
+  currentMonth: Date;
 }
 
 export const TransactionContext = React.createContext<TransactionContextType | undefined>(undefined);

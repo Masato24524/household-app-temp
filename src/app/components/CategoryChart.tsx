@@ -2,26 +2,57 @@
 
 import React, { useState } from 'react'
 import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Box, MenuItem, TextField } from '@mui/material';
-import { TransactionType } from '../types';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
+import { Box, CircularProgress, MenuItem, TextField, Typography } from '@mui/material';
+import { ExpenseCategory, IncomeCategory, Transaction, TransactionType } from '../types';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const CategoryChart = () => {
+interface CategoryChartProps {
+  monthlyTransactions: Transaction[];
+  isLoading: boolean;
+}
 
-  const [selectedType, setSelectedType] = useState<TransactionType>("expense")
+const CategoryChart = ({ monthlyTransactions, isLoading } :CategoryChartProps) => {
+
+  const [selectedType, setSelectedType] = useState<TransactionType>("expense");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setSelectedType(e.target.value as TransactionType)
   }
 
-  const data = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+  const categorySums = monthlyTransactions
+  .filter(
+    (transaction) => transaction.type === selectedType
+  ).reduce<Record<IncomeCategory | ExpenseCategory, number>>((acc, transaction) => {
+    if (!acc[transaction.category]) {
+      acc[transaction.category] = 0;
+    }
+    acc[transaction.category] += transaction.amount;
+    return acc;
+    // {
+    //   "食費": 2000,
+    //   "日用品": 3000,
+    // };
+    }, {} as Record<IncomeCategory | ExpenseCategory, number>
+  );
+  console.log(categorySums);
+
+  const categoryLabels = Object.keys(categorySums);
+  const categoryValues = Object.values(categorySums);
+  console.log(categoryLabels);
+  console.log(categoryValues);
+
+  const options = {
+    maintainAspectRatio: false,
+    responsive: true,
+  };
+
+  const data: ChartData<"pie"> = {
+    labels: categoryLabels,
     datasets: [
       {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
+        data: categoryValues,
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -44,7 +75,7 @@ const CategoryChart = () => {
   };
 
   return (
-    <Box>
+    <>
       <TextField 
         label="収支の種類" 
         select fullWidth value={selectedType} 
@@ -52,8 +83,24 @@ const CategoryChart = () => {
         <MenuItem value={"income"}>収入</MenuItem>
         <MenuItem value={"expense"}>支出</MenuItem>
       </TextField>
-      <Pie data={data} />
-    </Box>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexGrow: 1,
+        }}
+      >
+
+        {isLoading ? (
+          <CircularProgress />
+        ) : monthlyTransactions.length > 0 ? (
+            <Pie data={data} options={options} />
+        ) : (
+          <Typography>データがありません</Typography>
+        )}
+      </Box>
+    </>
   )
 }
 

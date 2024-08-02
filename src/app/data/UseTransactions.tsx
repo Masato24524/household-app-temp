@@ -22,8 +22,8 @@ function UseTransactions() {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
-  console.log(user);
 
   //firestoreのデータを【ユーザーのUIDと一致するもののみ】を全て取得
   useEffect(() => {
@@ -42,7 +42,6 @@ function UseTransactions() {
               id: doc.id,
             } as Transaction;
           });
-          console.log(transactionsData);
           setTransactions(transactionsData);
         } catch(err) {
           if(isFireStoreError(err)) {
@@ -50,12 +49,16 @@ function UseTransactions() {
           } else {
             console.error('一般的なエラーは：', err);
           }
-          //error
+        } finally {
+          setIsLoading(false);
         }
-      }
+      };
       fetchTransactions();
     }
   }, [user])
+
+  console.log(transactions);
+  console.log(isLoading);
 
   //ひと月分のデータのみ取得
   const monthlyTransactions = transactions.filter((transaction) => {
@@ -116,13 +119,13 @@ function UseTransactions() {
     };
   };
 
-  console.log('UseTransactions:', { monthlyTransactions, setCurrentMonth, handleSaveTransaction, handleDeleteTransaction });
-
   return {          
     monthlyTransactions,
     setCurrentMonth,
     handleSaveTransaction,
     handleDeleteTransaction,
+    isLoading,
+    currentMonth,
   }
     // <ThemeProvider theme={theme}>
     //   <CssBaseline />
