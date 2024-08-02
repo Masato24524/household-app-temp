@@ -1,6 +1,6 @@
 'use client'
 
-import { Box } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import React, { useState } from 'react'
 import MonthlySummary from '../components/MonthlySummary'
 import Calendar from '../components/Calendar/Calendar'
@@ -12,6 +12,7 @@ import { Schema } from '../validations/schema'
 import { NextPage } from 'next'
 import AuthComponent from '../components/AuthComponent'
 import { useTransactionContext } from '../context/TransactionContext'
+import { DateClickArg } from '@fullcalendar/interaction'
 
 interface HomeProps {
   monthlyTransactions: Transaction[];
@@ -19,8 +20,6 @@ interface HomeProps {
   handleSaveTransaction: (transaction: Schema) => Promise<void>
   handleDeleteTransaction: (transactionId: string) => Promise<void>
 }
-
-console.log('home/page.tsx is being rendered');
 
 const Home: NextPage<HomeProps> = () => {
   const { 
@@ -30,11 +29,17 @@ const Home: NextPage<HomeProps> = () => {
     handleDeleteTransaction 
   } = useTransactionContext();
 
-  console.log('Home props:', { monthlyTransactions, setCurrentMonth, handleSaveTransaction, handleDeleteTransaction });
   const today = format(new Date(), 'yyyy-MM-dd');
   const [currentDay, setCurrentDay] = useState(today);
   const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false); //falseは閉じた状態
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  console.log(isMobile);
 
   // 一日分のデータを取得
   const dailyTransactions = monthlyTransactions.filter((transaction) => {
@@ -43,27 +48,48 @@ const Home: NextPage<HomeProps> = () => {
   // console.log(dailyTransactions);
 
   const closeForm = () => {
-    setIsEntryDrawerOpen(!isEntryDrawerOpen);
     setSelectedTransaction(null);
-  }
 
-  // フォームの開閉処理（内訳追加ボタンを押したとき）
-  const handleAddTransactionForm = () => {
-    if(selectedTransaction) {
-      setSelectedTransaction(null);
+    if (isMobile) {
+      setIsDialogOpen(!isDialogOpen);
     } else {
       setIsEntryDrawerOpen(!isEntryDrawerOpen);
     }
   }
 
-  // 取り引きが選択された時の処理
-  const handleSelectTransaction = (transaction: Transaction) => {
-    console.log(transaction)
-    setIsEntryDrawerOpen(true);
-    setSelectedTransaction(transaction);
+  // フォームの開閉処理（内訳追加ボタンを押したとき）
+  const handleAddTransactionForm = () => {
+    if (isMobile) {
+      setIsDialogOpen(!isDialogOpen);
+    } else {
+      if (selectedTransaction) {
+        setSelectedTransaction(null);
+      } else {
+        setIsEntryDrawerOpen(!isEntryDrawerOpen);
+      }
+    }
   }
 
-  console.log('Home component:', { setCurrentMonth, setCurrentDay, currentDay, today });
+  // 取り引きが選択された時の処理
+  const handleSelectTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    if (isMobile) {
+      setIsDialogOpen(true);
+    } else {
+      setIsEntryDrawerOpen(true);
+    }
+  } 
+
+  //モバイル用Drawerを閉じる処理
+  const handleCloseMobileDrawer = () => {
+    setIsMobileDrawerOpen(false);
+  }
+
+  //日付を選択したときの処理
+  const handleDateClick = (dateInfo: DateClickArg) => {
+    setCurrentDay(dateInfo.dateStr)
+    setIsMobileDrawerOpen(true);
+  }
 
   return (
     <AuthComponent>
@@ -77,6 +103,7 @@ const Home: NextPage<HomeProps> = () => {
             setCurrentDay={setCurrentDay}
             currentDay={currentDay}
             today={today}
+            onDateClick={handleDateClick}
           />
         </Box>
 
@@ -87,6 +114,9 @@ const Home: NextPage<HomeProps> = () => {
           currentDay={currentDay} 
           onAddTransactionForm={handleAddTransactionForm}
           onSelectTransaction={handleSelectTransaction}
+          isMobile={isMobile}
+          open={isMobileDrawerOpen}
+          onClose={handleCloseMobileDrawer}
           />
           <TransactionForm 
           onCloseForm={closeForm} 
@@ -95,6 +125,8 @@ const Home: NextPage<HomeProps> = () => {
           onSaveTransaction={handleSaveTransaction}
           selectedTransaction={selectedTransaction}
           onDeleteTransaction={handleDeleteTransaction}
+          isMobile={isMobile}
+          isDialogOpen={isDialogOpen}
           />
         </Box>
       </Box>
