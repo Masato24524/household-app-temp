@@ -1,23 +1,32 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 // import './page.css';
 // import { theme } from './theme/theme'
-import { Transaction } from '../types/index';
-import { addDoc, collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { formatMonth } from '../utils/formatting';
-import { Schema } from '../validations/schema';
-import { getAuth, User } from 'firebase/auth';
-import AppLayout from '../components/layout/AppLayout';
-import { useAuth } from '../components/AuthComponent';
+import { Transaction } from "../types/index";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
+import { formatMonth } from "../utils/formatting";
+import { Schema } from "../validations/schema";
+import { getAuth, User } from "firebase/auth";
+import AppLayout from "../components/layout/AppLayout";
+import { useAuth } from "../components/AuthComponent";
 // import ClientOnlyRouter from './ClientOnlyRouter';
 // import AuthComponent from './components/AuthComponent';
 
 function UseTransactions() {
   // Firestoreのエラーかどうかを判定する型ガード
-  function isFireStoreError(err: unknown): err is {code: string, message: string} {
-    return typeof err === 'object' && err !== null && 'code' in err
+  function isFireStoreError(
+    err: unknown
+  ): err is { code: string; message: string } {
+    return typeof err === "object" && err !== null && "code" in err;
   }
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -30,11 +39,16 @@ function UseTransactions() {
     if (user) {
       const fetchTransactions = async () => {
         try {
-          const userTransactionsCollection = collection(db, 'users', user.uid, 'Transactions');
+          const userTransactionsCollection = collection(
+            db,
+            "users",
+            user.uid,
+            "Transactions"
+          );
           const querySnapshot = await getDocs(userTransactionsCollection);
           console.log(querySnapshot);
 
-          const transactionsData =querySnapshot.docs.map((doc) => {
+          const transactionsData = querySnapshot.docs.map((doc) => {
             // doc.data() is never undefined for query doc snapshots
             // console.log(doc.id, " => ", doc.data());
             return {
@@ -43,11 +57,11 @@ function UseTransactions() {
             } as Transaction;
           });
           setTransactions(transactionsData);
-        } catch(err) {
-          if(isFireStoreError(err)) {
-            console.error('firestoreのエラーは：', err);
+        } catch (err) {
+          if (isFireStoreError(err)) {
+            console.error("firestoreのエラーは：", err);
           } else {
-            console.error('一般的なエラーは：', err);
+            console.error("一般的なエラーは：", err);
           }
         } finally {
           setIsLoading(false);
@@ -55,7 +69,7 @@ function UseTransactions() {
       };
       fetchTransactions();
     }
-  }, [user])
+  }, [user]);
 
   console.log(transactions);
   console.log(isLoading);
@@ -66,7 +80,7 @@ function UseTransactions() {
   });
 
   //取引を保存する処理
-  const handleSaveTransaction = async(transaction: Schema) => {
+  const handleSaveTransaction = async (transaction: Schema) => {
     if (user) {
       try {
         // //uidを追加
@@ -77,22 +91,28 @@ function UseTransactions() {
 
         //firestoreにデータを保存
         // Add a new document with a generated id.
-        const userTransactionsCollection = collection(db, 'users', user.uid, 'Transactions');
+        const userTransactionsCollection = collection(
+          db,
+          "users",
+          user.uid,
+          "Transactions"
+        );
         const docRef = await addDoc(userTransactionsCollection, transaction);
         console.log("Document written with ID: ", docRef.id);
 
         const newTransaction = {
           id: docRef.id,
           ...transaction,
-        } as Transaction
+        } as Transaction;
         setTransactions((prevTransaction) => [
-          ...prevTransaction, 
-          newTransaction]);
-      } catch(err) {
-        if(isFireStoreError(err)) {
-          console.error('firestoreのエラーは：', err);
+          ...prevTransaction,
+          newTransaction,
+        ]);
+      } catch (err) {
+        if (isFireStoreError(err)) {
+          console.error("firestoreのエラーは：", err);
         } else {
-          console.error('一般的なエラーは：', err);
+          console.error("一般的なエラーは：", err);
         }
       }
     }
@@ -103,40 +123,85 @@ function UseTransactions() {
     if (user) {
       try {
         //firestoreのデータ削除
-        const transactionDoc = doc(db, 'users', user.uid, 'Transactions', transactionId);
+        const transactionDoc = doc(
+          db,
+          "users",
+          user.uid,
+          "Transactions",
+          transactionId
+        );
         await deleteDoc(transactionDoc);
-        console.log(transactionId)
-        const filterdTransactions = transactions.filter((transaction) => transaction.id !== transactionId)
-        console.log(filterdTransactions)
-        setTransactions(filterdTransactions)
-      } catch(err) {
-        if(isFireStoreError(err)) {
-          console.error('firestoreのエラーは：', err);
+        console.log(transactionId);
+        const filterdTransactions = transactions.filter(
+          (transaction) => transaction.id !== transactionId
+        );
+        console.log(filterdTransactions);
+        setTransactions(filterdTransactions);
+      } catch (err) {
+        if (isFireStoreError(err)) {
+          console.error("firestoreのエラーは：", err);
         } else {
-          console.error('一般的なエラーは：', err);
+          console.error("一般的なエラーは：", err);
         }
       }
-    };
+    }
   };
 
-  return {          
+  //取引を更新する処理
+  const handleUpdateTransaction = async (
+    transaction: Schema,
+    transactionId: string
+  ) => {
+    if (user) {
+      try {
+        //firestoreのデータ更新
+        const docRef = doc(
+          db,
+          "users",
+          user.uid,
+          "Transactions",
+          transactionId
+        );
+
+        // Set the "capital" field of the city 'DC'
+        await updateDoc(docRef, transaction);
+        //フロント更新
+        const updatedTransactions = transactions.map((t) =>
+          t.id === transactionId ? { ...t, ...transaction } : t
+        ) as Transaction[];
+        console.log("transactions", transactions);
+        console.log("updatedTransactions", updatedTransactions);
+        setTransactions(updatedTransactions);
+      } catch (err) {
+        if (isFireStoreError(err)) {
+          console.error("firestoreのエラーは：", err);
+        } else {
+          console.error("一般的なエラーは：", err);
+        }
+      }
+    }
+  };
+
+  return {
     monthlyTransactions,
     setCurrentMonth,
     handleSaveTransaction,
     handleDeleteTransaction,
     isLoading,
     currentMonth,
-  }
-    // <ThemeProvider theme={theme}>
-    //   <CssBaseline />
-    //     {/* <Signup /> */}
-    //     <AppLayout 
-          // monthlyTransactions={monthlyTransactions} 
-          // setCurrentMonth={setCurrentMonth}
-          // onSaveTransaction={handleSaveTransaction}
-          // onDeleteTransaction={handleDeleteTransaction}
-        // />
-          {/* <Home 
+    handleUpdateTransaction,
+  };
+  // <ThemeProvider theme={theme}>
+  //   <CssBaseline />
+  //     {/* <Signup /> */}
+  //     <AppLayout
+  // monthlyTransactions={monthlyTransactions}
+  // setCurrentMonth={setCurrentMonth}
+  // onSaveTransaction={handleSaveTransaction}
+  // onDeleteTransaction={handleDeleteTransaction}
+  // />
+  {
+    /* <Home 
             monthlyTransactions={monthlyTransactions} 
             setCurrentMonth={setCurrentMonth}
             onSaveTransaction={handleSaveTransaction}
@@ -144,8 +209,11 @@ function UseTransactions() {
           />
           <Report 
             monthlyTransactions={monthlyTransactions} 
-          />  */}
-        {/* </AppLayout> */}
+          />  */
+  }
+  {
+    /* </AppLayout> */
+  }
   //   </ThemeProvider>
   // );
 }
