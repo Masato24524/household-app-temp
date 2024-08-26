@@ -26,60 +26,69 @@ import WorkIcon from "@mui/icons-material/Work";
 import SavingIcon from "@mui/icons-material/Savings";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import { Schema, transactionSchema } from "../validations/schema";
-
+import { error } from "console";
 
 interface TransactionFromProps {
   onCloseForm: () => void;
   isEntryDrawerOpen: boolean;
   currentDay: string;
-  onSaveTransaction: ( transaction: Schema ) => Promise<void>;
+  onSaveTransaction: (transaction: Schema) => Promise<void>;
   selectedTransaction: Transaction | null;
-  onDeleteTransaction: (transactionId: string) => Promise<void>
+  onDeleteTransaction: (transactionId: string) => Promise<void>;
   isMobile: boolean;
   isDialogOpen: boolean;
+  setSelectedTransaction: React.Dispatch<
+    React.SetStateAction<Transaction | null>
+  >;
+  onUpdateTransaction: (
+    transaction: Schema,
+    transactionId: string
+  ) => Promise<void>;
 }
 
-type IncomeExpense = 'income'  | 'expense';
+type IncomeExpense = "income" | "expense";
 
 interface CategoryItem {
   label: IncomeCategory | ExpenseCategory;
   icon: JSX.Element;
 }
 
-const TransactionForm = ({ 
-  onCloseForm, 
-  isEntryDrawerOpen, 
+const TransactionForm = ({
+  onCloseForm,
+  isEntryDrawerOpen,
   currentDay,
   onSaveTransaction,
   selectedTransaction,
   onDeleteTransaction,
   isMobile,
   isDialogOpen,
-}: TransactionFromProps) => 
-{ const formWidth = {xs: 160, sm: 290};
+  setSelectedTransaction,
+  onUpdateTransaction,
+}: TransactionFromProps) => {
+  const formWidth = { xs: 160, sm: 290 };
 
   const expenseCategories: CategoryItem[] = [
     { label: "食費", icon: <FastfoodIcon fontSize="small" /> },
-    { label: "日用品", icon: <AlarmIcon fontSize="small" />},
-    { label: "住居費", icon: <AddHomeIcon fontSize="small" />},
-    { label: "交際費", icon: <Diversity3Icon fontSize="small" />},
-    { label: "娯楽", icon: <SportsTennisIcon fontSize="small" />},
-    { label: "交通費", icon: <TrainIcon fontSize="small" />},
+    { label: "日用品", icon: <AlarmIcon fontSize="small" /> },
+    { label: "住居費", icon: <AddHomeIcon fontSize="small" /> },
+    { label: "交際費", icon: <Diversity3Icon fontSize="small" /> },
+    { label: "娯楽", icon: <SportsTennisIcon fontSize="small" /> },
+    { label: "交通費", icon: <TrainIcon fontSize="small" /> },
   ];
 
   const incomeCategories: CategoryItem[] = [
     { label: "給与", icon: <WorkIcon fontSize="small" /> },
-    { label: "副収入", icon: <SavingIcon fontSize="small" />},
-    { label: "お小遣い", icon: <AddBusinessIcon fontSize="small" />},
+    { label: "副収入", icon: <SavingIcon fontSize="small" /> },
+    { label: "お小遣い", icon: <AddBusinessIcon fontSize="small" /> },
   ];
 
-  const[ categories, setCategories] = useState(expenseCategories);
+  const [categories, setCategories] = useState(expenseCategories);
 
-  const { 
-    control, 
-    setValue, 
-    watch, 
-    formState:{errors},
+  const {
+    control,
+    setValue,
+    watch,
+    formState: { errors },
     handleSubmit,
     reset,
   } = useForm<Schema>({
@@ -97,21 +106,39 @@ const TransactionForm = ({
   const incomeExpenseToggle = (type: IncomeExpense) => {
     setValue("type", type);
     setValue("category", "");
-  }
+  };
 
   //収支タイプを監視
   const currentType = watch("type");
 
   //収支タイプに応じたカテゴリを取得
   useEffect(() => {
-    const newCategories = currentType === "expense" ? expenseCategories : incomeCategories;
+    const newCategories =
+      currentType === "expense" ? expenseCategories : incomeCategories;
     setCategories(newCategories);
   }, [currentType]);
 
   //送信処理
   const onSubmit: SubmitHandler<Schema> = (data) => {
     console.log(data);
-    onSaveTransaction(data);
+
+    if (selectedTransaction) {
+      onUpdateTransaction(data, selectedTransaction.id)
+        .then(() => {
+          setSelectedTransaction(null);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      onSaveTransaction(data)
+        .then(() => {
+          setSelectedTransaction(null);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
 
     reset({
       type: "expense",
@@ -122,24 +149,33 @@ const TransactionForm = ({
     });
   };
 
+  useEffect(() => {
+    if (selectedTransaction) {
+      const categoryExsists = categories.some(
+        (category) => category.label === selectedTransaction.category
+      );
+      console.log(categoryExsists);
+      setValue("category", categoryExsists ? selectedTransaction.category : "");
+    }
+  }, [selectedTransaction, categories]);
+
   //フォーム内容を更新
   useEffect(() => {
-    if(selectedTransaction) {
+    if (selectedTransaction) {
       setValue("type", selectedTransaction.type);
       setValue("date", selectedTransaction.date);
       setValue("amount", selectedTransaction.amount);
-      setValue("category", selectedTransaction.category);
       setValue("content", selectedTransaction.content);
     } else {
       reset({
         type: "expense",
-        date: currentDay,      
+        date: currentDay,
         amount: 0,
         category: "",
         content: "",
       });
     }
-  }, [selectedTransaction])
+  }, [selectedTransaction]);
 
   useEffect(() => {
     setValue("date", currentDay);
@@ -150,11 +186,12 @@ const TransactionForm = ({
       event.preventDefault(); // デフォルトのフォーム送信を防ぐ
       event.stopPropagation(); // イベントの伝播を停止
       onDeleteTransaction(selectedTransaction.id);
+      setSelectedTransaction(null);
     }
-  }
+  };
 
   const formContent = (
-    <>            
+    <>
       {/* 入力エリアヘッダー */}
       <Box display={"flex"} justifyContent={"space-between"} mb={2}>
         <Typography variant="h6">入力</Typography>
@@ -172,24 +209,20 @@ const TransactionForm = ({
       <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
           {/* 収支切り替えボタン */}
-          <Controller 
+          <Controller
             name="type"
             control={control}
             render={({ field }) => (
               <ButtonGroup fullWidth>
-                <Button 
-                  variant={
-                    field.value === "expense" ? "contained" : "outlined"
-                  } 
-                  color={"error"} 
-                  onClick={() =>incomeExpenseToggle("expense")}
+                <Button
+                  variant={field.value === "expense" ? "contained" : "outlined"}
+                  color={"error"}
+                  onClick={() => incomeExpenseToggle("expense")}
                 >
                   支出
                 </Button>
-                <Button 
-                  variant={
-                    field.value === "income" ? "contained" : "outlined"
-                  }
+                <Button
+                  variant={field.value === "income" ? "contained" : "outlined"}
                   color={"primary"}
                   onClick={() => incomeExpenseToggle("income")}
                 >
@@ -198,12 +231,12 @@ const TransactionForm = ({
               </ButtonGroup>
             )}
           />
-          
+
           {/* 日付 */}
-          <Controller 
-            name='date'
+          <Controller
+            name="date"
             control={control}
-            render={( {field} ) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 label="日付"
@@ -215,108 +248,109 @@ const TransactionForm = ({
                 helperText={errors.date?.message}
               />
             )}
-        />
+          />
 
-        {/* カテゴリ */}
-        <Controller
-          name='category'
-          control={control}
-          render={({ field }) => {
-            // console.log(field)
-            return(
+          {/* カテゴリ */}
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => {
+              // console.log(field)
+              return (
+                <TextField
+                  error={!!errors.category}
+                  helperText={errors.category?.message}
+                  {...field}
+                  id="カテゴリ"
+                  label="カテゴリ"
+                  select
+                >
+                  {categories.map((category, index) => (
+                    <MenuItem value={category.label} key={index}>
+                      <ListItemIcon>{category.icon}</ListItemIcon>
+                      {category.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              );
+            }}
+          />
+
+          {/* 金額 */}
+          <Controller
+            name="amount"
+            control={control}
+            render={({ field }) => (
               <TextField
-                error={!!errors.category}
-                helperText={errors.category?.message}
+                error={!!errors.amount}
+                helperText={errors.amount?.message}
                 {...field}
-                id="カテゴリ" 
-                label="カテゴリ" 
-                select
-              >
-                {categories.map((category, index) => (
-                  <MenuItem value={category.label} key={index}>
-                    <ListItemIcon>
-                      {category.icon}
-                    </ListItemIcon>
-                    {category.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )
-          }}
-        />
+                value={field.value === 0 ? "" : field.value}
+                onChange={(e) => {
+                  const newValue = parseInt(e.target.value, 10) || 0;
+                  field.onChange(newValue);
+                }}
+                label="金額"
+                type="number"
+              />
+            )}
+          />
 
-        {/* 金額 */}
-        <Controller
-          name='amount'
-          control={control}
-          render={({ field }) => (
-            <TextField
-              error={!!errors.amount}
-              helperText={errors.amount?.message}
-              {...field}
-              value={field.value === 0 ? "" : field.value}
-              onChange={(e) => {
-                const newValue = parseInt(e.target.value, 10) || 0;
-                field.onChange(newValue);
-              }}
-              label="金額" 
-              type="number" 
-            />
-          )}
-        />
+          {/* 内容 */}
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                error={!!errors.content}
+                helperText={errors.content?.message}
+                {...field}
+                label="内容"
+                type="text"
+              />
+            )}
+          />
 
-        {/* 内容 */}
-        <Controller 
-          name='content'
-          control={control}
-          render={({field}) => (
-            <TextField
-              error={!!errors.content}
-              helperText={errors.content?.message}
-              {...field}
-              label="内容" 
-              type="text" 
-            />
-          )}
-        />
-
-        {/* 保存ボタン */}
-        <Button 
-          type="submit" 
-          variant="contained" 
-          color={currentType === "income" ? "primary" : "error"} fullWidth>
-          保存
-        </Button>
-
-        {/* 削除ボタン */}
-        {selectedTransaction && (
+          {/* 保存ボタン */}
           <Button
-            onClick={handleDelete}
-            type="submit" 
-            variant="outlined" 
-            color={"secondary"} fullWidth>
-            削除
+            type="submit"
+            variant="contained"
+            color={currentType === "income" ? "primary" : "error"}
+            fullWidth
+          >
+            {selectedTransaction ? "更新" : "保存"}
           </Button>
-        )}
+
+          {/* 削除ボタン */}
+          {selectedTransaction && (
+            <Button
+              onClick={handleDelete}
+              type="submit"
+              variant="outlined"
+              color={"secondary"}
+              fullWidth
+            >
+              削除
+            </Button>
+          )}
         </Stack>
       </Box>
     </>
-  )
+  );
 
   return (
     <>
       {isMobile ? (
         //mobile
-        <Dialog 
-          open={isDialogOpen} 
-          onClose={onCloseForm} 
-          fullWidth maxWidth={"sm"}
+        <Dialog
+          open={isDialogOpen}
+          onClose={onCloseForm}
+          fullWidth
+          maxWidth={"sm"}
         >
-          <DialogContent>
-            {formContent}
-          </DialogContent>
+          <DialogContent>{formContent}</DialogContent>
         </Dialog>
-      ):(
+      ) : (
         //PC
         <Box
           sx={{
@@ -337,156 +371,10 @@ const TransactionForm = ({
             boxShadow: "0px 0px 15px -5px #777777",
           }}
         >
-          {/* 入力エリアヘッダー */}
-          <Box display={"flex"} justifyContent={"space-between"} mb={2}>
-            <Typography variant="h6">入力</Typography>
-            {/* 閉じるボタン */}
-            <IconButton
-              onClick={onCloseForm}
-              sx={{
-                color: (theme) => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          {/* フォーム要素 */}
-          <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-              {/* 収支切り替えボタン */}
-              <Controller 
-                name="type"
-                control={control}
-                render={({ field }) => (
-                  <ButtonGroup fullWidth>
-                    <Button 
-                      variant={
-                        field.value === "expense" ? "contained" : "outlined"
-                      } 
-                      color={"error"} 
-                      onClick={() =>incomeExpenseToggle("expense")}
-                    >
-                      支出
-                    </Button>
-                    <Button 
-                      variant={
-                        field.value === "income" ? "contained" : "outlined"
-                      }
-                      color={"primary"}
-                      onClick={() => incomeExpenseToggle("income")}
-                    >
-                      収入
-                    </Button>
-                  </ButtonGroup>
-                )}
-              />
-              
-              {/* 日付 */}
-              <Controller 
-                name='date'
-                control={control}
-                render={( {field} ) => (
-                  <TextField
-                    {...field}
-                    label="日付"
-                    type="date"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    error={!!errors.date}
-                    helperText={errors.date?.message}
-                  />
-                )}
-              />
-
-              {/* カテゴリ */}
-              <Controller
-                name='category'
-                control={control}
-                render={({ field }) => {
-                  // console.log(field)
-                  return(
-                    <TextField
-                      error={!!errors.category}
-                      helperText={errors.category?.message}
-                      {...field}
-                      id="カテゴリ" 
-                      label="カテゴリ" 
-                      select
-                    >
-                      {categories.map((category, index) => (
-                        <MenuItem value={category.label} key={index}>
-                          <ListItemIcon>
-                            {category.icon}
-                          </ListItemIcon>
-                          {category.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  )
-                }}
-              />
-
-              {/* 金額 */}
-              <Controller
-                name='amount'
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    error={!!errors.amount}
-                    helperText={errors.amount?.message}
-                    {...field}
-                    value={field.value === 0 ? "" : field.value}
-                    onChange={(e) => {
-                      const newValue = parseInt(e.target.value, 10) || 0;
-                      field.onChange(newValue);
-                    }}
-                    label="金額" 
-                    type="number" 
-                  />
-                )}
-              />
-
-              {/* 内容 */}
-              <Controller 
-                name='content'
-                control={control}
-                render={({field}) => (
-                  <TextField
-                    error={!!errors.content}
-                    helperText={errors.content?.message}
-                    {...field}
-                    label="内容" 
-                    type="text" 
-                  />
-                )}
-              />
-
-              {/* 保存ボタン */}
-              <Button 
-                type="submit" 
-                variant="contained" 
-                color={currentType === "income" ? "primary" : "error"} fullWidth>
-                保存
-              </Button>
-
-              {/* 削除ボタン */}
-              {selectedTransaction && (
-                <Button
-                  onClick={handleDelete}
-                  type="submit" 
-                  variant="outlined" 
-                  color={"secondary"} fullWidth>
-                  削除
-                </Button>
-              )}
-
-            </Stack>
-          </Box>
+          {formContent}
         </Box>
       )}
     </>
-
   );
 };
 export default TransactionForm;

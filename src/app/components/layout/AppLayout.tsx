@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
 // import Divider from '@mui/material/Divider';
 // import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import SideBar from './common/SideBar';
-import UseTransactions from '../../data/UseTransactions';
-import { set } from 'date-fns';
-import { Schema } from '../../validations/schema';
-import { TransactionContext } from '../../context/TransactionContext';
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import SideBar from "./common/SideBar";
+import UseTransactions from "../../data/UseTransactions";
+import { set } from "date-fns";
+import { Schema } from "../../validations/schema";
+import { TransactionContext } from "../../context/TransactionContext";
 
 const drawerWidth = 140;
 
@@ -23,14 +23,15 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  const [view, setView] = React.useState<'home' | 'report'>('home');
+  const [view, setView] = React.useState<"home" | "report">("home");
   const {
-    monthlyTransactions =[],
+    monthlyTransactions = [],
     setCurrentMonth,
     handleSaveTransaction,
     handleDeleteTransaction,
     isLoading,
     currentMonth,
+    handleUpdateTransaction,
   } = UseTransactions();
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -52,19 +53,23 @@ export default function AppLayout({ children }: AppLayoutProps) {
   };
 
   return (
-    <TransactionContext.Provider value={{
-      monthlyTransactions,
-      setCurrentMonth,
-      handleSaveTransaction,
-      handleDeleteTransaction,
-      isLoading,
-      currentMonth,
-    }}> 
-      <Box sx={{ 
-        display: { md: 'flex' }, 
-        bgcolor: (theme) => theme.palette.grey[100], 
-        minHeight: '100vh' 
+    <TransactionContext.Provider
+      value={{
+        monthlyTransactions,
+        setCurrentMonth,
+        handleSaveTransaction,
+        handleDeleteTransaction,
+        isLoading,
+        currentMonth,
+        handleUpdateTransaction,
       }}
+    >
+      <Box
+        sx={{
+          display: { md: "flex" },
+          bgcolor: (theme) => theme.palette.grey[100],
+          minHeight: "100vh",
+        }}
       >
         <CssBaseline />
         {/* ヘッダー */}
@@ -81,7 +86,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { md: 'none' } }}
+              sx={{ mr: 2, display: { md: "none" } }}
             >
               <MenuIcon />
             </IconButton>
@@ -101,10 +106,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
         {/* メインコンテンツ */}
         <Box
           component="main"
-          sx={{ 
+          sx={{
             flexGrow: 1,
             p: 3,
-            width: { md: `calc(100% - ${drawerWidth}px)` } }}
+            width: { md: `calc(100% - ${drawerWidth}px)` },
+          }}
         >
           <Toolbar />
           {children}

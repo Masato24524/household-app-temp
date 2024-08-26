@@ -1,42 +1,54 @@
-'use client'
+"use client";
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useEffect, useState } from "react";
 import { auth, db } from "../../firebase";
 // import { Link, useNavigate } from "react-router-dom";
 import { error } from "console";
-import './page.css'
+import "./page.css";
 import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-
 function Signup() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
 
   // const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const router = useRouter();
 
+  useEffect(() => {
+    // emailとpasswordの状態が更新されるたびに、ボタンのdisabled状態を更新する
+    if (email !== "" && password !== "") {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [email, password]);
+
   const signup = async () => {
     await createUserWithEmailAndPassword(auth, email, password)
-    .then((useCredential) => {
-      console.log(useCredential);
+      .then((useCredential) => {
+        console.log(useCredential);
 
-      // ユーザー専用のコレクションを作成
-      setDoc(doc(db, 'users', useCredential.user.uid), {
-        email: useCredential.user.email,
-        createdAt: new Date(),
+        // ユーザー専用のコレクションを作成
+        setDoc(doc(db, "users", useCredential.user.uid), {
+          email: useCredential.user.email,
+          createdAt: new Date(),
+        });
+
+        router.push("/home");
+      })
+      .catch((error) => {
+        alert(error.message);
+        console.error(error);
       });
-
-      router.push('/home');
-    })
-    .catch((error) => {
-      alert(error.message);
-      console.error(error);
-    });
   };
 
   const signin = async () => {
@@ -86,6 +98,7 @@ function Signup() {
                 </label>
                 <div className="mt-1">
                   <input
+                    value={email} // 状態を継続するために value を設定
                     onChange={(e) => setEmail(e.target.value)}
                     id="email"
                     name="email"
@@ -111,6 +124,7 @@ function Signup() {
                 </label>
                 <div className="mt-1">
                   <input
+                    value={password} // 状態を継続するために value を設定
                     onChange={(e) => setPassword(e.target.value)}
                     id="password"
                     name="password"
@@ -123,17 +137,17 @@ function Signup() {
               </div>
               <div>
                 <button
-                  onClick={isLogin ? signup : signin} 
+                  onClick={isLogin ? signup : signin}
                   className="w-full flex justify-center mb-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={email === '' || password === ''}
+                  disabled={email === "" || password === ""}
                 >
-                   {isLogin ? "新規登録" : "ログイン"}
+                  {isLogin ? "新規登録" : "ログイン"}
                 </button>
               </div>
               <div className="mt-4 text-center text-sm">
-                <Link 
+                <Link
                   href={""}
-                  className="underline"  
+                  className="underline"
                   onClick={() => setIsLogin(!isLogin)}
                 >
                   {isLogin ? "ログイン" : "新規登録"}
@@ -147,5 +161,5 @@ function Signup() {
     </div>
   );
 }
-  
+
 export default Signup;
