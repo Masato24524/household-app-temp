@@ -91,6 +91,14 @@ function Signup() {
               </div> */}
               <div>
                 <label
+                  className="block text-sm font-medium text-gray-700 text-center"
+                  htmlFor="email"
+                >
+                  新規作成以外に、下記でお試しログインもできます。
+                  メールアドレス：dum25303@gmail.com　パスワード：test1234
+                </label>
+                <br />
+                <label
                   className="block text-sm font-medium text-gray-700"
                   htmlFor="email"
                 >
