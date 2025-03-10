@@ -95,7 +95,18 @@ function Signup() {
                   htmlFor="email"
                 >
                   新規作成以外に、下記でお試しログインもできます。
-                  メールアドレス：dum25303@gmail.com　パスワード：test1234
+                </label>
+                <label
+                  className="block text-sm font-medium text-gray-700 text-center"
+                  htmlFor="email"
+                >
+                  メールアドレス：dum25303@gmail.com
+                </label>
+                <label
+                  className="block text-sm font-medium text-gray-700 text-center"
+                  htmlFor="email"
+                >
+                  パスワード：test1234
                 </label>
                 <br />
                 <label
