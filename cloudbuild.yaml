@@ -61,14 +61,14 @@ availableSecrets:
 serviceAccount: 'household-app@household-app-453607.iam.gserviceaccount.com'
 logsBucket: 'gs://household-app-453607-logs'
 
-substitutions:
-  _FIREBASE_API_KEY: 'default_value_placeholder'
-  _FIREBASE_AUTH_DOMAIN: 'default_value_placeholder'
-  _FIREBASE_PROJECT_ID: 'default_value_placeholder'
-  _FIREBASE_STORAGE_BUCKET: 'default_value_placeholder'
-  _FIREBASE_MESSAGING_SENDER_ID: 'default_value_placeholder'
-  _FIREBASE_APP_ID: 'default_value_placeholder'
-  _FIREBASE_MEASUREMENT_ID: 'default_value_placeholder'
+# substitutions:
+#   _FIREBASE_API_KEY: 'default_value_placeholder'
+#   _FIREBASE_AUTH_DOMAIN: 'default_value_placeholder'
+#   _FIREBASE_PROJECT_ID: 'default_value_placeholder'
+#   _FIREBASE_STORAGE_BUCKET: 'default_value_placeholder'
+#   _FIREBASE_MESSAGING_SENDER_ID: 'default_value_placeholder'
+#   _FIREBASE_APP_ID: 'default_value_placeholder'
+#   _FIREBASE_MEASUREMENT_ID: 'default_value_placeholder'
 
 images:
   - 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}'
