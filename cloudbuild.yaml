@@ -29,6 +29,9 @@ steps:
       '--allow-unauthenticated'
     ]
 
+serviceAccount: 'household-app@household-app-453607.iam.gserviceaccount.com'
+logsBucket: 'gs://your-logs-bucket/'
+
 substitutions:
   _FIREBASE_API_KEY: 'default_value_placeholder'
   _FIREBASE_AUTH_DOMAIN: 'default_value_placeholder'
