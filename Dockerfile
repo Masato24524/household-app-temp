@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json ./
+RUN ls -la
 RUN npm ci
 
 # Rebuild the source code only when needed
