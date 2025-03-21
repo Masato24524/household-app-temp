@@ -1,4 +1,8 @@
 steps:
+  # デバッグ用：リポジトリの内容表示
+  - name: 'ubuntu'
+    args: ['bash', '-c', 'ls -la && echo "Check package-lock.json:" && ls -la package-lock.json || echo "package-lock.json not found"']
+  
   # コンテナイメージのビルド
   - name: 'gcr.io/cloud-builders/docker'
     args: [
