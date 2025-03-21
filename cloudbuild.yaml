@@ -30,7 +30,7 @@ steps:
     ]
 
 serviceAccount: 'household-app@household-app-453607.iam.gserviceaccount.com'
-logsBucket: 'gs://your-logs-bucket/'
+logsBucket: 'gs://household-app-453607-logs'
 
 substitutions:
   _FIREBASE_API_KEY: 'default_value_placeholder'
