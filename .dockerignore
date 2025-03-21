@@ -5,6 +5,7 @@ build
 .github
 .gitignore
 README.md
+.env.build
 .env.local
 .env.development.local
 .env.test.local
