@@ -90,11 +90,7 @@ function Signup() {
                 </div>
               </div> */}
               <div>
-<<<<<<< HEAD
               <label
-=======
-                <label
->>>>>>> efca81d441df5ac008df521069edf8fd64f395d6
                   className="block text-sm font-medium text-gray-700 text-center"
                   htmlFor="email"
                 >
