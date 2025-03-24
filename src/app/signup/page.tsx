@@ -30,7 +30,7 @@ function Signup() {
     } else {
       setIsDisabled(true);
     }
-  }, [email, password]);
+  }, [,email, password]);
 
   const signup = async () => {
     await createUserWithEmailAndPassword(auth, email, password)

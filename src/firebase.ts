@@ -4,7 +4,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -52,6 +52,13 @@ if (typeof window !== 'undefined') {
 
 // 認証オブジェクトの準備
 const auth = getAuth(app);
+// 認証状態のデバッグログ
+onAuthStateChanged(auth, (user) => {
+  console.log('認証状態:', user);
+  if (!user) {
+    console.log('認証エラー:', auth.currentUser);
+  }
+});
 
 // Google認証プロバイダの準備
 const googleProvider = new GoogleAuthProvider();
