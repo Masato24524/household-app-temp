@@ -41,6 +41,7 @@ steps:
       '--allow-unauthenticated'
     ]
 
+# SecretManagerから環境変数を取得
 availableSecrets:
   secretManager:
   - versionName: projects/household-app-453607/secrets/FIREBASE_API_KEY/versions/latest
@@ -57,6 +58,16 @@ availableSecrets:
     env: 'FIREBASE_APP_ID'
   - versionName: projects/household-app-453607/secrets/FIREBASE_MEASUREMENT_ID/versions/latest
     env: 'FIREBASE_MEASUREMENT_ID'
+
+# 取得したSecretをマッピング
+substitutions:
+    FIREBASE_API_KEY: projects/household-app-453607/secrets/FIREBASE_API_KEY/versions/latest
+    FIREBASE_AUTH_DOMAIN: projects/household-app-453607/secrets/FIREBASE_AUTH_DOMAIN/versions/latest
+    FIREBASE_PROJECT_ID: projects/household-app-453607/secrets/FIREBASE_PROJECT_ID/versions/latest
+    FIREBASE_STORAGE_BUCKET: projects/household-app-453607/secrets/FIREBASE_STORAGE_BUCKET/versions/latest
+    FIREBASE_MESSAGING_SENDER_ID: projects/household-app-453607/secrets/FIREBASE_MESSAGING_SENDER_ID/versions/latest
+    FIREBASE_APP_ID: projects/household-app-453607/secrets/FIREBASE_APP_ID/versions/latest
+    FIREBASE_MEASUREMENT_ID: projects/household-app-453607/secrets/FIREBASE_MEASUREMENT_ID/versions/latest
 
 serviceAccount: 'household-app@household-app-453607.iam.gserviceaccount.com'
 logsBucket: 'gs://household-app-453607-logs'
