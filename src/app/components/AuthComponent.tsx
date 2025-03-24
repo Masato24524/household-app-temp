@@ -22,6 +22,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // ログイン状態の監視
     useEffect(() => {
+        console.log('AuthComponent: Initializing auth state monitoring', { pathname })
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
             setLoading(false);
@@ -34,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         //　アンマウント時に監視解除
         return () => unsubscribe();
-    }, [router]);
+    }, [router, pathname]);
 
     return (
         <AuthContext.Provider value={{ user, loading }}>
