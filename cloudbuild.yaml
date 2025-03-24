@@ -1,46 +1,3 @@
-steps:
-  # デバッグ用：リポジトリの内容表示
-  # - name: 'ubuntu'
-  #   args: ['bash', '-c', 'ls -la && echo "Check package-lock.json:" && ls -la package-lock.json || echo "package-lock.json not found"']
-  
-  # コンテナイメージのビルド(Cloud-build)
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_API_KEY=${_FIREBASE_API_KEY}',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${_FIREBASE_AUTH_DOMAIN}',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=${_FIREBASE_PROJECT_ID}',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${_FIREBASE_STORAGE_BUCKET}',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${_FIREBASE_MESSAGING_SENDER_ID}',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_APP_ID=${_FIREBASE_APP_ID}',
-      # '--build-arg', 'NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${_FIREBASE_MEASUREMENT_ID}',
-      '-t', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}',
-      '.'
-    ]
-    secretEnv:
-      - FIREBASE_API_KEY
-      - FIREBASE_AUTH_DOMAIN
-      - FIREBASE_PROJECT_ID
-      - FIREBASE_STORAGE_BUCKET
-      - FIREBASE_MESSAGING_SENDER_ID
-      - FIREBASE_APP_ID
-      - FIREBASE_MEASUREMENT_ID
-
-  # Artifact Registry にイメージをプッシュ
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}']
-
-  # Cloud Run にデプロイ
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args: [
-      'run', 'deploy', 'household-app',
-      '--image', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}',
-      '--region', 'asia-northeast1',
-      '--platform', 'managed',
-      '--allow-unauthenticated'
-    ]
-
 # SecretManagerから環境変数を取得
 availableSecrets:
   secretManager:
@@ -68,6 +25,51 @@ substitutions:
     _FIREBASE_MESSAGING_SENDER_ID: projects/household-app-453607/secrets/FIREBASE_MESSAGING_SENDER_ID/versions/latest
     _FIREBASE_APP_ID: projects/household-app-453607/secrets/FIREBASE_APP_ID/versions/latest
     _FIREBASE_MEASUREMENT_ID: projects/household-app-453607/secrets/FIREBASE_MEASUREMENT_ID/versions/latest
+
+steps:
+  # デバッグ用：リポジトリの内容表示
+  # - name: 'ubuntu'
+  #   args: ['bash', '-c', 'ls -la && echo "Check package-lock.json:" && ls -la package-lock.json || echo "package-lock.json not found"']
+  
+  # コンテナイメージのビルド(Cloud-build)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_API_KEY=${_FIREBASE_API_KEY}',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${_FIREBASE_AUTH_DOMAIN}',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_PROJECT_ID=${_FIREBASE_PROJECT_ID}',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${_FIREBASE_STORAGE_BUCKET}',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${_FIREBASE_MESSAGING_SENDER_ID}',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_APP_ID=${_FIREBASE_APP_ID}',
+      '--build-arg', 'NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${_FIREBASE_MEASUREMENT_ID}',
+      '-t', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}',
+      '.'
+    ]
+    secretEnv:
+      - FIREBASE_API_KEY
+      - FIREBASE_AUTH_DOMAIN
+      - FIREBASE_PROJECT_ID
+      - FIREBASE_STORAGE_BUCKET
+      - FIREBASE_MESSAGING_SENDER_ID
+      - FIREBASE_APP_ID
+      - FIREBASE_MEASUREMENT_ID
+
+  # Artifact Registry にイメージをプッシュ
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}']
+
+  # Cloud Run にデプロイ
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'deploy', 'household-app',
+      '--image', 'asia-northeast1-docker.pkg.dev/${PROJECT_ID}/household-app-repo/household-app:${SHORT_SHA}',
+      '--region', 'asia-northeast1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
+
+
 
 serviceAccount: 'household-app@household-app-453607.iam.gserviceaccount.com'
 logsBucket: 'gs://household-app-453607-logs'
